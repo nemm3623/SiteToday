@@ -44,3 +44,7 @@
 - 전역 보안 설정은 common.config.SecurityConfig로 옮기고, 로그인에 필요한 회원 조회는 account.infrastructure.MemberUserDetailsService에 두었다.
 - 회원 API의 요청·응답 DTO를 account.presentation.dto 패키지의 SignupRequest, SignupResponse, CurrentMemberResponse로 분리했다.
 - 회원가입 컨트롤러의 별도 예외 처리 메서드를 제거하고 가입 요청에서 403·409 응답을 직접 반환하도록 정리했다.
+
+### 회원 저장소 JPA 전환
+
+- 회원 도메인과 members 테이블 매핑을 분리했다. MemberRepositoryImpl이 MemberEntity와 Member 간 변환을 담당하고 MemberJpaRepository가 저장·조회한다. 기존 schema.sql을 유지하고 Hibernate가 시작 시 매핑을 검증한다.
