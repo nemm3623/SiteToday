@@ -2,9 +2,10 @@ package com.example.sitetoday.account.application;
 
 import java.util.Objects;
 import java.util.UUID;
+import com.example.sitetoday.account.domain.AccountErrorCode;
+import com.example.sitetoday.common.exception.BusinessException;
 import com.example.sitetoday.account.domain.Member;
 import com.example.sitetoday.account.domain.MemberRepository;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,6 @@ public class MemberRegistrationService {
         }
     }
 
-    public static class EmailAlreadyRegistered extends RuntimeException { }
-
-    public static class OfficeRegistrationRestricted extends RuntimeException { }
-
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
 
@@ -33,15 +30,11 @@ public class MemberRegistrationService {
 
     public UUID register(Command command) {
         if (command.role() == Member.Role.OFFICE) {
-            throw new OfficeRegistrationRestricted();
+            throw new BusinessException(AccountErrorCode.OFFICE_REGISTRATION_RESTRICTED);
         }
         Member member = new Member(UUID.randomUUID(), Member.normalizeEmail(command.email()),
                 encoder.encode(command.password()), command.role());
-        try {
-            memberRepository.save(member);
-        } catch (DuplicateKeyException duplicate) {
-            throw new EmailAlreadyRegistered();
-        }
+        memberRepository.save(member);
         return member.id();
     }
 }

@@ -6,7 +6,6 @@ import com.example.sitetoday.account.presentation.dto.SignupRequest;
 import com.example.sitetoday.account.presentation.dto.SignupResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +20,10 @@ class AccountController {
     }
 
     @PostMapping("/members")
-    ResponseEntity<SignupResponse> register(@RequestBody @Valid SignupRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    SignupResponse register(@RequestBody @Valid SignupRequest request) {
         var command = new MemberRegistrationService.Command(request.email(), request.password(), request.role());
-        try {
-            var response = new SignupResponse(service.register(command));
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (MemberRegistrationService.OfficeRegistrationRestricted exception) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (MemberRegistrationService.EmailAlreadyRegistered exception) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        return new SignupResponse(service.register(command));
     }
 
     @GetMapping("/auth/csrf")

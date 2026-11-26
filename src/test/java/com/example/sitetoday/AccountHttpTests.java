@@ -34,6 +34,12 @@ class AccountHttpTests {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    void assertError(HttpResponse<String> response, int status, String code) {
+        assertThat(response.statusCode()).isEqualTo(status);
+        assertThat(response.headers().firstValue("Content-Type").orElse("")).startsWith("application/json");
+        assertThat(response.body()).contains("\"code\":\"" + code + "\"", "\"message\":");
+    }
+
     @Test
     void loginReadsAnExistingJdbcMember(@Autowired JdbcClient jdbc, @Autowired PasswordEncoder encoder) throws Exception {
         var id = java.util.UUID.randomUUID();
@@ -51,16 +57,19 @@ class AccountHttpTests {
         var csrf = get("auth/csrf");
         assertThat(csrf.statusCode()).isEqualTo(200);
         String token = csrf.body();
+        assertError(post("members", "application/json", "{}", ""), 403, "ACCESS_DENIED");
+        assertError(post("members", "application/json", "{}", token), 400, "INVALID_REQUEST");
+        assertError(post("members", "application/json", "{", token), 400, "INVALID_REQUEST");
         String account = """
                 {"email":"worker@example.org","password":"long-passphrase","role":"WORKER"}
                 """;
-        assertThat(post("members", "application/json", account.replace("WORKER", "OFFICE"), token).statusCode()).isEqualTo(403);
+        assertError(post("members", "application/json", account.replace("WORKER", "OFFICE"), token), 403, "OFFICE_REGISTRATION_RESTRICTED");
         assertThat(post("members", "application/json", account, token).statusCode()).isEqualTo(201);
-        assertThat(post("members", "application/json", account, token).statusCode()).isEqualTo(409);
-        assertThat(get("auth/me").statusCode()).isEqualTo(401);
+        assertError(post("members", "application/json", account, token), 409, "EMAIL_ALREADY_REGISTERED");
+        assertError(get("auth/me"), 401, "AUTHENTICATION_REQUIRED");
         String credentials = "email=worker%40example.org&password=";
         String form = "application/x-www-form-urlencoded";
-        assertThat(post("auth/login", form, credentials + "incorrect", token).statusCode()).isEqualTo(401);
+        assertError(post("auth/login", form, credentials + "incorrect", token), 401, "INVALID_CREDENTIALS");
         assertThat(post("auth/login", form, credentials + "long-passphrase", token).statusCode()).isEqualTo(204);
         assertThat(get("auth/me").body()).contains("WORKER").doesNotContain("long-passphrase");
     }

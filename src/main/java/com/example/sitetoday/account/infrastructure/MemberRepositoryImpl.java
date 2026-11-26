@@ -1,6 +1,7 @@
 package com.example.sitetoday.account.infrastructure;
 
-import org.springframework.dao.DuplicateKeyException;
+import com.example.sitetoday.account.domain.AccountErrorCode;
+import com.example.sitetoday.common.exception.BusinessException;
 import com.example.sitetoday.account.domain.Member;
 import com.example.sitetoday.account.domain.MemberRepository;
 import java.util.Optional;
@@ -21,7 +22,7 @@ class MemberRepositoryImpl implements MemberRepository {
             repository.saveAndFlush(new MemberEntity(member));
         } catch (DataIntegrityViolationException exception) {
             if (repository.existsByEmail(member.email())) {
-                throw new DuplicateKeyException("Email already registered", exception);
+                throw new BusinessException(AccountErrorCode.EMAIL_ALREADY_REGISTERED, exception);
             }
             throw exception;
         }

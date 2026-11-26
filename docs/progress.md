@@ -48,3 +48,9 @@
 ### 회원 저장소 JPA 전환
 
 - 회원 도메인과 members 테이블 매핑을 분리했다. MemberRepositoryImpl이 MemberEntity와 Member 간 변환을 담당하고 MemberJpaRepository가 저장·조회한다. 기존 schema.sql을 유지하고 Hibernate가 시작 시 매핑을 검증한다.
+
+### 공통 오류 응답
+
+- API 오류 본문은 code와 message를 가진 JSON이다. 공통 MVC 예외 핸들러가 잘못된 입력과 JSON을 400 INVALID_REQUEST로 변환한다. 전역 예외 핸들러는 중복 이메일을 409 EMAIL_ALREADY_REGISTERED, 사무소 공개 가입을 403 OFFICE_REGISTRATION_RESTRICTED로 변환한다.
+- Security 필터에서도 같은 응답 형식을 사용한다. 미인증 접근은 401 AUTHENTICATION_REQUIRED, 잘못된 로그인 정보는 401 INVALID_CREDENTIALS, CSRF 검증 실패는 403 ACCESS_DENIED로 응답한다.
+- 공통 ErrorCode는 오류의 이름·메시지·분류를 정의한다. 업무 오류 발생 시 모듈별 enum(회원은 AccountErrorCode)을 BusinessException에 담아 던지면 전역 핸들러가 분류에 맞는 HTTP 상태와 JSON으로 변환한다. MVC 입력 오류와 Security 인증·인가 오류에는 CommonErrorCode를 사용한다.
