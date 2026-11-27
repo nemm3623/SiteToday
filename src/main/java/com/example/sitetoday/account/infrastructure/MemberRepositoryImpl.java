@@ -5,16 +5,14 @@ import com.example.sitetoday.common.exception.BusinessException;
 import com.example.sitetoday.account.domain.Member;
 import com.example.sitetoday.account.domain.MemberRepository;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+@RequiredArgsConstructor
 @Repository
 class MemberRepositoryImpl implements MemberRepository {
     private final MemberJpaRepository repository;
-
-    MemberRepositoryImpl(MemberJpaRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public void save(Member member) {
