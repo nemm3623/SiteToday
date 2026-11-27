@@ -54,3 +54,9 @@
 - API 오류 본문은 code와 message를 가진 JSON이다. 공통 MVC 예외 핸들러가 잘못된 입력과 JSON을 400 INVALID_REQUEST로 변환한다. 전역 예외 핸들러는 중복 이메일을 409 EMAIL_ALREADY_REGISTERED, 사무소 공개 가입을 403 OFFICE_REGISTRATION_RESTRICTED로 변환한다.
 - Security 필터에서도 같은 응답 형식을 사용한다. 미인증 접근은 401 AUTHENTICATION_REQUIRED, 잘못된 로그인 정보는 401 INVALID_CREDENTIALS, CSRF 검증 실패는 403 ACCESS_DENIED로 응답한다.
 - 공통 ErrorCode는 오류의 이름·메시지·분류를 정의한다. 업무 오류 발생 시 모듈별 enum(회원은 AccountErrorCode)을 BusinessException에 담아 던지면 전역 핸들러가 분류에 맞는 HTTP 상태와 JSON으로 변환한다. MVC 입력 오류와 Security 인증·인가 오류에는 CommonErrorCode를 사용한다.
+
+## 2026-11-27
+
+### 서비스 입출력 객체 분리
+
+- 회원가입 Command·Result를 독립 파일로 분리하고 개발 컨벤션에 명명 규칙을 기록했다.
