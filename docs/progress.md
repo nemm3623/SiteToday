@@ -71,3 +71,8 @@
 - [이슈 #1](https://github.com/nemm3623/SiteToday/issues/1) 검증으로 실제 HTTP 세션에서 두 사무소 중 선택한 곳과 고용주·근무 조건의 H2 저장값, 오류 응답, 사무소 계정의 역할·고유 제약을 확인했다. `./gradlew test --rerun-tasks` 전체 6개 통과.
 
 - 인력 요청 등록의 Command·Result를 독립 파일로 분리했다. 사무소 목록 조회는 서비스의 OfficeSummaryResult를 컨트롤러에서 OfficeSummaryResponse로 변환한다.
+
+## 2026-11-27 · 회원 모듈 생성자 주입
+
+- [이슈 #3](https://github.com/nemm3623/SiteToday/issues/3)에서 회원 컨트롤러, 가입 서비스, 회원 저장소 구현체, 로그인 사용자 조회 서비스의 필수 의존성 생성자를 Lombok으로 생성하도록 변경했다.
+- [Git 작업 흐름](git-workflow.md)에 배포용 master와 통합용 develop을 기준으로 브랜치 분기·병합 규칙을 기록했다.
