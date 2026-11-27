@@ -5,19 +5,17 @@ import com.example.sitetoday.account.presentation.dto.CurrentMemberResponse;
 import com.example.sitetoday.account.presentation.dto.SignupRequest;
 import com.example.sitetoday.account.presentation.dto.SignupResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 class AccountController {
     private final MemberRegistrationService service;
-
-    AccountController(MemberRegistrationService service) {
-        this.service = service;
-    }
 
     @PostMapping("/members")
     @ResponseStatus(HttpStatus.CREATED)
