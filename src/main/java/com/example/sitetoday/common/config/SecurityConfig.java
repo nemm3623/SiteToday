@@ -25,6 +25,7 @@ class SecurityConfig {
         return http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
+                        .requestMatchers("/api/offices", "/api/offices/**").hasRole("EMPLOYER")
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((req, res, ex) -> writeError(mapper, res,

@@ -12,6 +12,7 @@ public record ErrorResponse(String code, String message) {
             case INVALID_INPUT -> HttpStatus.BAD_REQUEST;
             case UNAUTHENTICATED -> HttpStatus.UNAUTHORIZED;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
             case CONFLICT -> HttpStatus.CONFLICT;
         };
     }

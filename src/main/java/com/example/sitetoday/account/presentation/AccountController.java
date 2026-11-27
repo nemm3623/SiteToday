@@ -4,6 +4,7 @@ import com.example.sitetoday.account.application.MemberRegistrationService;
 import com.example.sitetoday.account.presentation.dto.CurrentMemberResponse;
 import com.example.sitetoday.account.presentation.dto.SignupRequest;
 import com.example.sitetoday.account.presentation.dto.SignupResponse;
+import com.example.sitetoday.account.application.RegisterMemberCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,8 @@ class AccountController {
     @PostMapping("/members")
     @ResponseStatus(HttpStatus.CREATED)
     SignupResponse register(@RequestBody @Valid SignupRequest request) {
-        var command = new MemberRegistrationService.Command(request.email(), request.password(), request.role());
-        return new SignupResponse(service.register(command));
+        var command = new RegisterMemberCommand(request.email(), request.password(), request.role());
+        return new SignupResponse(service.register(command).memberId());
     }
 
     @GetMapping("/auth/csrf")

@@ -17,6 +17,7 @@
 ## 애플리케이션 계층 (application)
 - 유스케이스를 실행하는 서비스와 서비스의 입력·출력을 표현하는 Command·Result를 둔다.
 - 서비스는 필요한 객체를 조회하고, 도메인 메서드를 호출하고, 처리 결과를 저장한다. 여러 작업이 하나의 유스케이스에서 함께 성공하거나 실패해야 한다면 해당 유스케이스에 트랜잭션 경계를 둔다.
+- 서비스의 Command와 Result는 application 패키지에 각각 독립된 최상위 타입과 파일로 선언한다. 이름에는 유스케이스와 역할을 드러낸다(예: RegisterMemberCommand, RegisterMemberResult). 등록 결과가 ID 하나여도 Result로 반환한다.
 - 입력 객체인 Command에는 어떤 호출 경로에서든 필요한 값만 검증한다.
 
 
