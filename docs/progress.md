@@ -60,3 +60,14 @@
 ### 서비스 입출력 객체 분리
 
 - 회원가입 Command·Result를 독립 파일로 분리하고 개발 컨벤션에 명명 규칙을 기록했다.
+
+### 2단계 · 고용주의 사무소 조회와 인력 요청 등록
+
+- 사무소는 이름과 고유 ID를 가지며, 기존 로그인 체계의 OFFICE 회원 한 명을 전용 계정으로 사용한다. DB 외래 키와 고유 제약으로 계정 역할과 1:1 연결을 보장한다. 사무소 개설과 전용 계정 발급 절차는 추후 결정한다.
+- 로그인한 고용주가 `GET /api/offices`를 호출하면 사무소의 officeId와 name 목록을 이름순으로 받는다. 등록된 사무소가 없으면 빈 배열을 반환한다.
+- 목록에서 고른 officeId로 `POST /api/offices/{officeId}/labor-requests`를 호출한다. 로그인 세션 쿠키와 로그인 후 재발급받은 CSRF 토큰이 필요하다. 서버는 세션의 회원 ID를 고용주로 기록하고 성공 시 201과 requestId를 반환한다.
+- 요청 JSON에는 startsAt·endsAt(현지 날짜와 시각, 예: 2026-12-01T22:00), workDescription(작업 내용), workerCount(인원), dailyWage(일당)를 보낸다. 종료는 시작 이후여야 하며 다음 날 종료도 가능하다. 인원과 일당은 양의 정수다.
+- 유효하지 않은 입력은 400 INVALID_REQUEST, 존재하지 않는 사무소는 404 OFFICE_NOT_FOUND다. 미인증은 401, 고용주 외 역할과 CSRF 검증 실패는 403이다. POST는 인증·인가보다 CSRF 검사를 먼저 받는다.
+- [이슈 #1](https://github.com/nemm3623/SiteToday/issues/1) 검증으로 실제 HTTP 세션에서 두 사무소 중 선택한 곳과 고용주·근무 조건의 H2 저장값, 오류 응답, 사무소 계정의 역할·고유 제약을 확인했다. `./gradlew test --rerun-tasks` 전체 6개 통과.
+
+- 인력 요청 등록의 Command·Result를 독립 파일로 분리했다. 사무소 목록 조회는 서비스의 OfficeSummaryResult를 컨트롤러에서 OfficeSummaryResponse로 변환한다.
